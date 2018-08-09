@@ -1,8 +1,9 @@
 addon('JunkFilters', function() 
 
-  local function menu (save, delete)
+  local function setupMenu (save, delete)
 
     local editFont = 'JunkFilters/ui/fonts/inconsolata.otf|16|soft-shadow-thin'
+    local docsLink = 'https://github.com/eromelcm/AdvancedJunkFilters/wiki'
     local editing, name, test, priority = false, '', '', 1
 
     local function names ()
@@ -81,10 +82,7 @@ addon('JunkFilters', function()
         reference   = 'JF_EditboxFilter',
         isExtraWide = true,
         isMultiline = true,
-        getFunc     = function() 
-          JF_EditboxFilter.editbox:SetFont(editFont) -- hack
-          return test 
-        end,
+        getFunc     = function() JF_EditboxFilter.editbox:SetFont(editFont); return test end,
         setFunc     = function(str) test = str end, 
       },
       [6] = {
@@ -100,10 +98,25 @@ addon('JunkFilters', function()
         name        = 'Save Filter',
         width       = 'half',
         func        = function() save(name, priority, test); update() end,
+      },
+      [8] = {
+        type        = 'divider',
+        width       = 'full',
+        alpha       = 0.4,
+      },
+      [9] = {
+        type        = 'description',
+        text        = 'You can use "|cACC0E0/filternow|r" to run your filters on your entire inventory if needed. How to write a filter is documented online.',
+        width       = 'full',
+      },
+      [10] = {
+        type        = 'button',
+        name        = 'View Documentation',
+        func        = function() RequestOpenUnsafeURL(docsLink) end,
       }
     })
 
   end
 
-  export('menu', menu)
+  export('setupMenu', setupMenu)
 end)

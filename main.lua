@@ -2,41 +2,27 @@ addon('JunkFilters', function()
 
   local filters = {}
 
-  -- LOAD
-  -- parse filter strings from saved vars into usable functions
-
-  local function load ()
-
-    local filters = {}
-    local compare = function(a, b) return a.priority < b.priority end
-
-    for name, filter in pairs(data.filters) do 
-      local test     = loadstring('return '..filter.test)
-      local priority = filter.priority
-      sortinsert(filters, { priority = priority, test = test }, compare)
-    end
-
-    return filters
+  local function loadFilter (name, priority, test)
+    sortinsert(filters, { 
+      name     = name, 
+      priority = priority,
+      test     = loadstring('return '..test)
+    }, function(a, b) return a.priority < b.priority end)
   end
 
-  -- SAVE
-  -- save a new filter into the saved vars, reload filters
-
-  local function save (name, priority, test)
-    data.filters[name] = { priority = priority, test = test }
-    filters = load()
-  end
-
-  -- DELETE
-  -- clear a filter from the saved vars, reload filters
-
-  local function delete (name)
+  local function deleteFilter (name)
     data.filters[name] = nil
-    filters = load()
+    for i, filter in pairs(filters) do
+      if filter.name == name then
+        table.remove(filters, i); return
+      end
+    end
   end
 
-  -- FILTERITEM
-  -- compare an item to the filters and mark as junk if one returns true
+  local function saveFilter (name, priority, test)
+    data.filters[name] = { priority = priority, test = test }
+    loadFilter(name, priority, test)
+  end
 
   local function filterItem (item)
 
@@ -76,13 +62,15 @@ addon('JunkFilters', function()
     end
   end
 
-  -- EVENTS
-  -- setup, filter on inventory change, and auto sell junk at stores
-
   event.on('loaded', function() 
     data.filters = data.filters or {}
-    filters = load()
-    menu(save, delete)
+    setupMenu(saveFilter, deleteFilter)
+  end)
+
+  event.on('player loaded', function() 
+    for name, filter in pairs(data.filters) do 
+      loadFilter(name, filter.priority, filter.test)
+    end
   end)
 
   event.on('inventory update', function(code, bag, slot) 
