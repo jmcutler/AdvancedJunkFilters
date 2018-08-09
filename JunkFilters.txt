@@ -1,0 +1,31 @@
+## Title: Advanced Junk Filters
+## Author: @eromelcm
+## Version: 0.5
+## APIVersion: 100023
+## SavedVariables: JunkFilters
+
+libs/libstub/libstub.lua
+
+libs/addonmenu/addonmenu.lua
+libs/addonmenu/controls/panel.lua
+libs/addonmenu/controls/submenu.lua
+libs/addonmenu/controls/button.lua
+libs/addonmenu/controls/checkbox.lua
+libs/addonmenu/controls/colorpicker.lua
+libs/addonmenu/controls/custom.lua
+libs/addonmenu/controls/description.lua
+libs/addonmenu/controls/dropdown.lua
+libs/addonmenu/controls/editbox.lua
+libs/addonmenu/controls/header.lua
+libs/addonmenu/controls/slider.lua
+libs/addonmenu/controls/texture.lua
+libs/addonmenu/controls/iconpicker.lua
+libs/addonmenu/controls/divider.lua
+
+modules/addon.lua
+modules/utility.lua
+modules/inventory.lua
+
+ui/settings.lua
+
+main.lua
