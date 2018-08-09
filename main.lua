@@ -20,7 +20,7 @@ addon('JunkFilters', function()
   end
 
   -- SAVE
-  -- save a new filter/rule into the saved vars, reload filters
+  -- save a new filter into the saved vars, reload filters
 
   local function save (name, priority, test)
     data.filters[name] = { priority = priority, test = test }
@@ -28,7 +28,7 @@ addon('JunkFilters', function()
   end
 
   -- DELETE
-  -- clear a filter/rule from the saved vars, reload filters
+  -- clear a filter from the saved vars, reload filters
 
   local function delete (name)
     data.filters[name] = nil
