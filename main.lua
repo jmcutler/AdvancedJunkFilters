@@ -2,26 +2,25 @@ addon('JunkFilters', function()
 
   local filters = {}
 
-  local function loadFilter (name, priority, test)
-    sortinsert(filters, { 
-      name     = name, 
-      priority = priority,
-      test     = loadstring('return '..test)
-    }, function(a, b) return a.priority < b.priority end)
+  local function loadFilters ()
+    filters = {}
+    for name, filter in pairs(data.filters) do 
+      sortinsert(filters, { 
+        name     = name, 
+        priority = filter.priority,
+        test     = loadstring('return '..filter.test)
+      }, function(a, b) return a.priority < b.priority end)
+    end
   end
 
   local function deleteFilter (name)
     data.filters[name] = nil
-    for i, filter in pairs(filters) do
-      if filter.name == name then
-        table.remove(filters, i); return
-      end
-    end
+    loadFilters()
   end
 
   local function saveFilter (name, priority, test)
     data.filters[name] = { priority = priority, test = test }
-    loadFilter(name, priority, test)
+    loadFilters()
   end
 
   local function filterItem (item)
@@ -63,9 +62,7 @@ addon('JunkFilters', function()
 
   event.on('loaded', function() 
     data.filters = data.filters or {}
-    for name, filter in pairs(data.filters) do 
-      loadFilter(name, filter.priority, filter.test)
-    end
+    loadFilters()
     setupMenu(saveFilter, deleteFilter)
   end)
 

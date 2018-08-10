@@ -1,6 +1,6 @@
 ## Title: Advanced Junk Filters
 ## Author: @eromelcm
-## Version: 0.6
+## Version: 0.7
 ## APIVersion: 100023
 ## SavedVariables: JunkFilters
 
