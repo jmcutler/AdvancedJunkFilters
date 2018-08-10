@@ -47,7 +47,6 @@ addon('JunkFilters', function()
       inBackpack     = item.inBackpack,
       inBank         = item.inBank,
       inCraftbag     = item.inCraftbag,
-      hasSet         = item.hasSet,
       isResearchable = item.isResearchable,
       isBound        = item.isBound,
       isCrafted      = item.isCrafted,
