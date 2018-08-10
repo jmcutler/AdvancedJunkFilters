@@ -63,13 +63,10 @@ addon('JunkFilters', function()
 
   event.on('loaded', function() 
     data.filters = data.filters or {}
-    setupMenu(saveFilter, deleteFilter)
-  end)
-
-  event.on('player loaded', function() 
     for name, filter in pairs(data.filters) do 
       loadFilter(name, filter.priority, filter.test)
     end
+    setupMenu(saveFilter, deleteFilter)
   end)
 
   event.on('inventory update', function(code, bag, slot) 
@@ -79,6 +76,7 @@ addon('JunkFilters', function()
 
   event.on('store opened', function() 
     inventory().sellJunk()
+    print('|t16:16:EsoUI/Art/currency/currency_gold.dds|t Junk Items Sold')
   end)
 
   event.filter('inventory update', 'bag', 'backpack')
@@ -89,6 +87,7 @@ addon('JunkFilters', function()
     for slot = 1, bag.size() do 
       if bag.isFilled(slot) then filterItem(bag.item(slot)) end 
     end
+    print('Inventory Filtered')
   end
 
 end)
