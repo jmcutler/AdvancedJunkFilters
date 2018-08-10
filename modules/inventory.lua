@@ -49,6 +49,7 @@ addon('JunkFilters', function()
     -- (string, int) trait name and id
     function item.trait ()
       local num = GetItemTrait(bag, slot)
+      if num == 0 then return GetString('SI_ITEMTYPE', 0), num end
       return GetString('SI_ITEMTRAITTYPE', num), num
     end
 
