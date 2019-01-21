@@ -1,31 +1,31 @@
 ## Title: Advanced Junk Filters
 ## Author: @eromelcm
-## Version: 0.7
-## APIVersion: 100023
+## Version: 1.4
+## APIVersion: 100025
 ## SavedVariables: JunkFilters
 
-libs/libstub/libstub.lua
+Libs/LibStub/LibStub.lua
+Libs/LibAddonMenu-2.0/LibAddonMenu-2.0.lua
+Libs/LibAddonMenu-2.0/controls/panel.lua
+Libs/LibAddonMenu-2.0/controls/submenu.lua
+Libs/LibAddonMenu-2.0/controls/button.lua
+Libs/LibAddonMenu-2.0/controls/checkbox.lua
+Libs/LibAddonMenu-2.0/controls/colorpicker.lua
+Libs/LibAddonMenu-2.0/controls/custom.lua
+Libs/LibAddonMenu-2.0/controls/description.lua
+Libs/LibAddonMenu-2.0/controls/dropdown.lua
+Libs/LibAddonMenu-2.0/controls/editbox.lua
+Libs/LibAddonMenu-2.0/controls/header.lua
+Libs/LibAddonMenu-2.0/controls/slider.lua
+Libs/LibAddonMenu-2.0/controls/texture.lua
+Libs/LibAddonMenu-2.0/controls/iconpicker.lua
+Libs/LibAddonMenu-2.0/controls/divider.lua
 
-libs/addonmenu/addonmenu.lua
-libs/addonmenu/controls/panel.lua
-libs/addonmenu/controls/submenu.lua
-libs/addonmenu/controls/button.lua
-libs/addonmenu/controls/checkbox.lua
-libs/addonmenu/controls/colorpicker.lua
-libs/addonmenu/controls/custom.lua
-libs/addonmenu/controls/description.lua
-libs/addonmenu/controls/dropdown.lua
-libs/addonmenu/controls/editbox.lua
-libs/addonmenu/controls/header.lua
-libs/addonmenu/controls/slider.lua
-libs/addonmenu/controls/texture.lua
-libs/addonmenu/controls/iconpicker.lua
-libs/addonmenu/controls/divider.lua
 
-modules/addon.lua
-modules/utility.lua
-modules/inventory.lua
+Modules/Addon.lua
+Modules/Utility.lua
+Modules/Inventory.lua
 
-ui/settings.lua
+UI/Settings.lua
 
-main.lua
+Main.lua

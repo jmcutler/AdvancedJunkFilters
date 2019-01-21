@@ -1,90 +1,100 @@
-addon('JunkFilters', function() 
+Addon('JunkFilters', function() 
 
-  local filters = {}
+  local Bag        = Require('Bag')
+  local Contains   = Require('Contains')
+  local SortInsert = Require('SortInsert')
+  local Settings   = Require('Settings')
+  local Backpack   = Bag(BAG_BACKPACK)
 
-  local function loadFilters ()
-    filters = {}
-    for name, filter in pairs(data.filters) do 
-      sortinsert(filters, { 
-        name     = name, 
-        priority = filter.priority,
-        test     = loadstring('return '..filter.test)
-      }, function(a, b) return a.priority < b.priority end)
+  local Filters = {}
+
+  local function LoadFilters ()
+    Filters = {}
+    for name, Filter in pairs(Data.Filters) do 
+      SortInsert(Filters, { 
+        Name     = name, 
+        Priority = Filter.Priority,
+        Test     = LoadString('return '..Filter.Test),
+      }, function(A, B) return A.Priority < B.Priority end)
     end
   end
 
-  local function deleteFilter (name)
-    data.filters[name] = nil
-    loadFilters()
+  local function SaveFilter (name, priority, test)
+    Data.Filters[name] = { Priority = priority, Test = test }
+    LoadFilters()
   end
 
-  local function saveFilter (name, priority, test)
-    data.filters[name] = { priority = priority, test = test }
-    loadFilters()
+  local function DeleteFilter (name)
+    Data.Filters[name] = nil
+    LoadFilters()
   end
 
-  local function filterItem (item)
+  local function FilterItem (code, bag, slot)
 
-    if item.isLocked() or item.qaulity() > 4 then return end
+    local Item = Backpack.Item(slot)
+    if Item.IsLocked() or Item.Qaulity() > 4 then return end
 
-    local api = {
-      set            = function(...) return contains({...}, item.set()) end,
-      type           = function(...) return contains({...}, item.type()) end,
-      stype          = function(...) return contains({...}, item.stype()) end,
-      ftype          = function(...) return contains({...}, item.ftype()) end,
-      name           = function(...) return contains({...}, item.name()) end,
-      trait          = function(...) return contains({...}, item.trait()) end,
-      armortype      = function(...) return contains({...}, item.armortype()) end,
-      weapontype     = function(...) return contains({...}, item.weapontype()) end,
-      qaulity        = item.qaulity,
-      stat           = item.stat,
-      level          = item.level,
-      cp             = item.cp,
-      condition      = item.condition,
-      stack          = item.stack,
-      maxStack       = item.maxStack,
-      inBackpack     = item.inBackpack,
-      inBank         = item.inBank,
-      inCraftbag     = item.inCraftbag,
-      isResearchable = item.isResearchable,
-      isBound        = item.isBound,
-      isCrafted      = item.isCrafted,
-      isStolen       = item.isStolen,
-      isQuickslotted = item.isQuickslotted,
+    local function FilterType (...)
+      local nums  = Item.FilterTypes()
+      local names = Item.FilterNames()
+      return Contains({...}, unpack(nums)) or Contains({...}, unpack(names))
+    end
+
+    local API = {
+      stat           = Item.Stat,
+      level          = Item.Level,
+      cp             = Item.CP,
+      condition      = Item.Condition,
+      craftRank      = Item.CraftRank,
+      stack          = Item.Stack,
+      maxStack       = Item.MaxStack,
+      inBackpack     = Item.InBackpack,
+      inBank         = Item.InBank,
+      inCraftbag     = Item.InCraftbag,
+      isResearchable = Item.IsResearchable,
+      isBound        = Item.IsBound,
+      isCrafted      = Item.IsCrafted,
+      isStolen       = Item.IsStolen,
+      isQuickslotted = Item.IsQuickslotted,
+      isKnown        = Item.IsKnown,
+      qaulity        = Item.Qaulity,
+      ftype          = FilterType,
+      set            = function(...) return Contains({...}, Item.Set()) end,
+      name           = function(...) return Contains({...}, Item.Name()) end,
+      trait          = function(...) return Contains({...}, Item.Trait()) end,
+      type           = function(...) return Contains({...}, Item.Type()) end,
+      stype          = function(...) return Contains({...}, Item.SpecialType()) end,
+      armortype      = function(...) return Contains({...}, Item.ArmorType()) end,
+      weapontype     = function(...) return Contains({...}, Item.WeaponType()) end,
     } 
 
-    for _, filter in pairs(filters) do 
-      local filter = setfenv(filter.test, api) 
-      local ok, result = pcall(filter)
-      if ok and result then item.junk(true) end
+    for _, Filter in pairs(Filters) do 
+      local Filter = setfenv(Filter.Test, API) 
+      local ok, result = pcall(Filter)
+      if ok then if result then Item.Junk(true) end
+      else Print('Error Running Junk Filter') end
     end
   end
 
-  event.on('loaded', function() 
-    data.filters = data.filters or {}
-    loadFilters()
-    setupMenu(saveFilter, deleteFilter)
+  Event.OnLoad(function() 
+    Data.Filters = Data.Filters or {}
+    LoadFilters()
+    Settings(SaveFilter, DeleteFilter)
   end)
 
-  event.on('inventory update', function(code, bag, slot) 
-    local item = inventory(bag).item(slot)
-    filterItem(item)
+  Event.On(EVENT_OPEN_STORE, function() 
+    if Backpack.SellJunk() then Print('Junk Items Sold') end
   end)
 
-  event.on('store opened', function() 
-    inventory().sellJunk()
-    print('|t16:16:EsoUI/Art/currency/currency_gold.dds|t Junk Items Sold')
-  end)
-
-  event.filter('inventory update', 'bag', 'backpack')
-  event.filter('inventory update', 'reason', 'default')
+  Event.On(EVENT_INVENTORY_SINGLE_SLOT_UPDATE, FilterItem)
+  .Filter(REGISTER_FILTER_BAG_ID, BAG_BACKPACK)
+  .Filter(REGISTER_FILTER_INVENTORY_UPDATE_REASON, NVENTORY_UPDATE_REASON_DEFAULT)
 
   SLASH_COMMANDS['/filternow'] = function() 
-    local bag = inventory('backpack')
-    for slot = 1, bag.size() do 
-      if bag.isFilled(slot) then filterItem(bag.item(slot)) end 
+    for slot = 0, Backpack.Size() do 
+      if Backpack.IsFilled(slot) then FilterItem(nil, nil, slot) end 
     end
-    print('Inventory Filtered')
+    Print('Inventory Filtered')
   end
 
 end)

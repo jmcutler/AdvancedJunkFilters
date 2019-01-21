@@ -1,21 +1,22 @@
-addon('JunkFilters', function() 
+Addon('JunkFilters', function() 
 
-  local function setupMenu (save, delete)
+  local SortInsert = Require('SortInsert')
+  local LAM        = LibStub('LibAddonMenu-2.0')
 
-    local editFont = 'JunkFilters/ui/fonts/inconsolata.otf|16|soft-shadow-thin'
+  local function Settings (Save, Delete)
+
+    local editFont = 'JunkFilters/UI/Fonts/Inconsolata.otf|16|soft-shadow-thin'
     local docsLink = 'https://github.com/eromelcm/AdvancedJunkFilters/wiki'
     local editing, name, test, priority = false, '', '', 1
 
-    local function names ()
-      local names = {}
-      local compare = function(a, b)
-        return data.filters[a].priority < data.filters[b].priority
-      end
-      for name in pairs(data.filters) do sortinsert(names, name, compare) end
+    local function Names ()
+      local names   = {}
+      local compare = function(a, b) return Data.Filters[a].Priority < Data.Filters[b].Priority end
+      for name in pairs(Data.Filters) do SortInsert(names, name, compare) end
       return names
     end
 
-    local function updateUI ()
+    local function UpdateUI ()
       JF_SliderPriority:UpdateValue()
       JF_EditboxFilter:UpdateValue()
       JF_EditboxName:UpdateValue()
@@ -23,35 +24,42 @@ addon('JunkFilters', function()
       JF_ButtonDelete:UpdateDisabled()
     end
 
-    local function update ()
-      editing, name, test, priority = false, '', '', 1
-      JF_DrwopdownFilters:UpdateChoices(names())
-      updateUI()
+    local function Update ()
+      editing  = false
+      name     = ''
+      test     = '' 
+      priority = 1 
+      JF_DrwopdownFilters:UpdateChoices(Names())
+      UpdateUI()
     end
 
-    local function select (selection)
-      local filter = data.filters[selection]
-      if filter then
-        editing, name, test, priority = true, selection, filter.test, filter.priority
-        updateUI()
+    local function Select (selection)
+      local Filter = Data.Filters[selection]
+      if Filter then
+        editing  = true
+        name     = selection 
+        test     = Filter.Test
+        priority = Filter.Priority
+        UpdateUI()
       end
     end
 
-    local LAM = LibStub("LibAddonMenu-2.0")
-
-    LAM:RegisterAddonPanel('junkfilters', { 
-      type = 'panel',
-      name = 'Advanced Junk Filters',
+    LAM:RegisterAddonPanel('JunkFilterSettings', { 
+      type        = 'panel',
+      name        = 'Advanced Junk Filters',
+      displayName = 'Advanced Junk Filters',
+      author      = '@eromeclm',
+      version     = '1.4',
     })
 
-    LAM:RegisterOptionControls('junkfilters', {
+    LAM:RegisterOptionControls('JunkFilterSettings', {
       [1] = {
         type        = 'dropdown',
         name        = 'Edit Filter',
         reference   = 'JF_DrwopdownFilters',
-        choices     = names(),
+        choices     = Names(),
         getFunc     = function() return nil end,
-        setFunc     = function(filter) select(filter) end,
+        setFunc     = function(filter) Select(filter) end,
       },
       [2] = {
         type        = 'divider',
@@ -91,13 +99,13 @@ addon('JunkFilters', function()
         reference   = 'JF_ButtonDelete',
         width       = 'half',
         disabled    = function() return not editing end,
-        func        = function() delete(name); update() end,
+        func        = function() Delete(name); Update() end,
       },
       [7] = {
         type        = 'button',
         name        = 'Save Filter',
         width       = 'half',
-        func        = function() save(name, priority, test); update() end,
+        func        = function() Save(name, priority, test); Update() end,
       },
       [8] = {
         type        = 'divider',
@@ -118,5 +126,6 @@ addon('JunkFilters', function()
 
   end
 
-  export('setupMenu', setupMenu)
+  Export('Settings', Settings)
+  
 end)

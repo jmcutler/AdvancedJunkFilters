@@ -1,93 +1,77 @@
-local version = 2.0
-if not __addons or __addons.version < version then __addons = { version = version }
+local version = 3.1
+if not ADDONS or ADDONS.version < version then ADDONS = { version = version }
 
-  local events = {
-    ['loaded']           = EVENT_ADD_ON_LOADED,
-    ['player loaded']    = EVENT_PLAYER_ACTIVATED,
-    ['inventory update'] = EVENT_INVENTORY_SINGLE_SLOT_UPDATE,
-    ['store opened']     = EVENT_OPEN_STORE,
-  }
+  function Print (str) return d(str) end
 
-  local filters = {
-    ['bag']              = REGISTER_FILTER_BAG_ID,
-    ['reason']           = REGISTER_FILTER_INVENTORY_UPDATE_REASON,
-  }
+  function With (Object)
 
-  local conditions = {
-    ['backpack']         = BAG_BACKPACK,
-    ['default']          = INVENTORY_UPDATE_REASON_DEFAULT,
-  }
+    local function Return () return Object end
 
-  function print (str)
-    return d(str)
-  end
-
-  function loadstring (str)
-    return LoadString(str)
-  end
-
-  function with (object)
-    local function meta (self, func)
+    local function Meta (self, func)
       return function (self, ...)
-        assert(object[func], func..' missing in object')
-        object[func](object, ...)
+        assert(Object[func], 'function not found in object')
+        Object[func](Object, ...)
         return self
       end
     end
-    return setmetatable({ value = function() return object end }, { __index = meta })
+
+    return setmetatable({ Return = Return }, { __index = Meta })
   end
 
-  function class (parent)
-    local base = {}
-    return setmetatable(base, {
-      __index = parent,
-      __call  = function (class, ...)
-        local object = setmetatable({}, { __index = base })
-        object:init(...)
-        return object
+  function Addon (addon, Func)
+
+    local Modules = {}
+
+    local function Require (name)
+      assert(Modules[name], string.format('Require "%s" was not found.', name))
+      return Modules[name]
+    end
+
+    local function Export (name, value)
+      Modules[name] = value
+    end
+
+    local function On (event, Callback)
+      EVENT_MANAGER:RegisterForEvent(addon, event, Callback)
+
+      local Options = {}
+
+      function Options.Filter (filter, condition) 
+        EVENT_MANAGER:AddFilterForEvent(addon, event, filter, condition)
+        return Options
       end
-    })
-  end
-
-  function addon (addon, func)
-
-    local function export (name, value)
-      __addons[addon][name] = value
+      
+      return Options
     end
 
-    local function forget (event)
-      if not events[event] then return end
-      EVENT_MANAGER:UnregisterForEvent(addon, events[event])
+    local function Forget (event)
+      EVENT_MANAGER:UnregisterForEvent(addon, event)
     end
 
-    local function filter (event, filter, condition)
-      if not events[event] then return end
-      EVENT_MANAGER:AddFilterForEvent(addon, events[event], filters[filter], conditions[condition])
+    local function OnLoad (Func)
+      On(EVENT_ADD_ON_LOADED, function(code, name) 
+        if not addon == name then return end
+        ADDONS[addon].Data = ZO_SavedVars:NewAccountWide(addon, 1, nil, {})
+        ADDONS[addon].CharData = ZO_SavedVars:New(addon, 1, nil, {})
+        Forget(EVENT_ADD_ON_LOADED); Func()
+      end)
     end
 
-    local function on (event, func)
-      if not events[event] then return end
-      local call = func
-      if events[event] == EVENT_ADD_ON_LOADED then 
-        call = function(_, name) 
-          if addon ~= name then return end
-          export('data', ZO_SavedVars:NewAccountWide(addon, 1, nil, nil))
-          export('chardata', ZO_SavedVars:New(addon, 1, nil, nil))
-          func()
-        end
-      end 
-      EVENT_MANAGER:RegisterForEvent(addon, events[event], call)
-    end
-
-    if not __addons[addon] then 
-      __addons[addon] = {
-        export = export, 
-        event  = {on = on, forget = forget, filter = filter}
+    if not ADDONS[addon] then 
+      ADDONS[addon] = {
+        Export  = Export, 
+        Require = Require,
+        Event   = { 
+          On     = On, 
+          Forget = Forget, 
+          OnLoad = OnLoad,
+        }
       } 
-      setmetatable(__addons[addon], {__index = _G})
+      setmetatable(ADDONS[addon], { __index = _G })
     end
     
-    setfenv(func, __addons[addon]); func()
+    setfenv(Func, ADDONS[addon]); Func()
+    
   end
 
 end

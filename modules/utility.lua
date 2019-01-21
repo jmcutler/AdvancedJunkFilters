@@ -1,12 +1,20 @@
-addon('JunkFilters', function() 
+Addon('JunkFilters', function() 
 
-  local function contains (list, value)
-    for _, v in pairs(list) do 
-      if value == v then return true end
+  local function Contains (list, ...)
+    for _, item in pairs(list) do
+      for _, value in pairs{...} do 
+        if value == item then return true end
+      end
     end return false
   end
 
-  local function sortinsert (list, value, func)
+  local function Map (list, func)
+    local new = {}
+    for i, v in ipairs(list) do new[i] = func(v) end
+    return new
+  end
+
+  local function SortInsert (list, value, func)
     local func = func or (function (a, b) return a < b end)
     local first, last, mid, state = 1, #list, 1, 0
     while first <= last do
@@ -18,6 +26,8 @@ addon('JunkFilters', function()
     return mid + state
   end
 
-  export('contains', contains)
-  export('sortinsert', sortinsert)
+  Export('Contains', Contains)
+  Export('SortInsert', SortInsert)
+  Export('Map', Map)
+  
 end)
