@@ -16,6 +16,7 @@ Addon('JunkFilters', function()
     -- (int, string) specific type id
     function Item.SpecialType ()
       local _, num = GetItemType(bag, slot)
+      if num == 0 then return num, GetString('SI_ITEMTYPE', num) end
       return num, GetString('SI_SPECIALIZEDITEMTYPE', num)
     end
 
@@ -199,7 +200,7 @@ Addon('JunkFilters', function()
     end
 
     -- (boolean) is this a recipe/book that is known by the character?
-    function Item.IsKnown() 
+    function Item.IsKnown () 
       return IsItemLinkRecipeKnown(link) or IsItemLinkBookKnown(link) 
     end
 

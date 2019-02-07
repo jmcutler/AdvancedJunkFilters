@@ -72,6 +72,7 @@ TYPE
 
 SPECIALIZED TYPE
 
+0   'None'
 1   'Meat Dish'
 2   'Fruit Dish'
 3   'Vegetable Dish'
@@ -129,7 +130,7 @@ SPECIALIZED TYPE
 214 'Target Dummy'
 215 'Attunable Station'
 300 'Armor'
-350 'Augment'
+350 'Augment' (Not Used?)
 400 'Trebuchet'
 401 'Ballista'
 402 'Ram'
@@ -166,7 +167,6 @@ FILTER TYPE
 20 'Trait Items'
 21 'Furnishing'
 22 'House with Template'
-23 'Sellable On Trading House'
 24 'Jewelry Crafting'
 25 'Jewelry'
 26 'Slottable Quest Items'
@@ -177,28 +177,34 @@ TRAITS
  1  'Powered'
  2  'Charged'
  3  'Precise'
- 4  'Infused'
+ 4  'Infused' (Weapons)
  5  'Defending'
- 6  'Training'
+ 6  'Training' (Weapons)
  7  'Sharpened'
  8  'Decisive'
- 9  'Intricate'
- 10 'Ornate'
+ 9  'Intricate' (Weapons)
+ 10 'Ornate' (Weapons)
  11 'Sturdy'
  12 'Impenetrable'
  13 'Reinforced'
  14 'Well-fitted'
+ 15 'Training' (Armor)
+ 16 'Infused' (Armor)
  17 'Invigorating'
  18 'Divines'
+ 19 'Ornate' (Armor)
+ 20 'Intricate' (Armor)
  21 'Healthy'
  22 'Arcane'
  23 'Robust'
- 25 'Nirnhoned'
+ 25 'Nirnhoned' (Armor)
+ 26 'Nirnhoned' (Weapons)
  28 'Swift'
  29 'Harmony'
  30 'Triune'
  31 'Bloodthirsty'
  32 'Protective'
+ 33 'Infused' (Jewelry)
 
  ARMOR TYPE
 
@@ -210,9 +216,12 @@ TRAITS
 WEAPON TYPE
 
 0  'None'
-1  'Axe'
-2  'Mace'
-3  'Sword'
+1  'Axe' (One-Handed)
+2  'Mace' (One-Handed)
+3  'Sword' (One-Handed)
+4  'Sword' (Two-Handed)
+5  'Axe' (Two-Handed)
+6  'Mace' (Two-Handed)
 8  'Bow'
 9  'Healing Staff'
 10 'Rune' (Not Used)

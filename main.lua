@@ -4,9 +4,9 @@ Addon('JunkFilters', function()
   local Contains   = Require('Contains')
   local SortInsert = Require('SortInsert')
   local Settings   = Require('Settings')
-  local Backpack   = Bag(BAG_BACKPACK)
 
-  local Filters = {}
+  local Backpack = Bag(BAG_BACKPACK)
+  local Filters  = {}
 
   local function LoadFilters ()
     Filters = {}
@@ -44,6 +44,7 @@ Addon('JunkFilters', function()
       stat           = Item.Stat,
       level          = Item.Level,
       cp             = Item.CP,
+      qaulity        = Item.Qaulity,
       condition      = Item.Condition,
       craftRank      = Item.CraftRank,
       stack          = Item.Stack,
@@ -51,14 +52,15 @@ Addon('JunkFilters', function()
       inBackpack     = Item.InBackpack,
       inBank         = Item.InBank,
       inCraftbag     = Item.InCraftbag,
+      hasSet         = Item.HasSet,
       isResearchable = Item.IsResearchable,
       isBound        = Item.IsBound,
       isCrafted      = Item.IsCrafted,
       isStolen       = Item.IsStolen,
       isQuickslotted = Item.IsQuickslotted,
       isKnown        = Item.IsKnown,
-      qaulity        = Item.Qaulity,
       ftype          = FilterType,
+      id             = function(...) return Contains({...}, Item.ID()) end,
       set            = function(...) return Contains({...}, Item.Set()) end,
       name           = function(...) return Contains({...}, Item.Name()) end,
       trait          = function(...) return Contains({...}, Item.Trait()) end,
@@ -76,25 +78,43 @@ Addon('JunkFilters', function()
     end
   end
 
+  -- On Addon Loaded
   Event.OnLoad(function() 
-    Data.Filters = Data.Filters or {}
-    LoadFilters()
+
+    Data.Filters = Data.Filters or {
+      ['General'] = {
+        ['Priority'] = 1,
+        ['Test'] = "type('Trash')"
+      }
+    }
+
+    Data.Options = Data.Options or {
+      AutoSell = true
+    }
+
     Settings(SaveFilter, DeleteFilter)
+    LoadFilters()
   end)
 
+  -- On Store Open
   Event.On(EVENT_OPEN_STORE, function() 
-    if Backpack.SellJunk() then Print('Junk Items Sold') end
+    if Data.Options.AutoSell then
+      if Backpack.SellJunk() 
+      then Print('Junk Items Sold') end
+    end
   end)
+
+  -- Filter Now Command
+  SLASH_COMMANDS['/filternow'] = function() 
+    for slot = 0, Backpack.Size() do 
+      if Backpack.IsFilled(slot) 
+      then FilterItem(nil, nil, slot) end 
+    end
+    Print('Inventory Filtered')
+  end
 
   Event.On(EVENT_INVENTORY_SINGLE_SLOT_UPDATE, FilterItem)
   .Filter(REGISTER_FILTER_BAG_ID, BAG_BACKPACK)
   .Filter(REGISTER_FILTER_INVENTORY_UPDATE_REASON, NVENTORY_UPDATE_REASON_DEFAULT)
-
-  SLASH_COMMANDS['/filternow'] = function() 
-    for slot = 0, Backpack.Size() do 
-      if Backpack.IsFilled(slot) then FilterItem(nil, nil, slot) end 
-    end
-    Print('Inventory Filtered')
-  end
 
 end)

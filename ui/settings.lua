@@ -49,17 +49,15 @@ Addon('JunkFilters', function()
       name        = 'Advanced Junk Filters',
       displayName = 'Advanced Junk Filters',
       author      = '@eromeclm',
-      version     = '1.4',
+      version     = '1.7',
     })
 
     LAM:RegisterOptionControls('JunkFilterSettings', {
       [1] = {
-        type        = 'dropdown',
-        name        = 'Edit Filter',
-        reference   = 'JF_DrwopdownFilters',
-        choices     = Names(),
-        getFunc     = function() return nil end,
-        setFunc     = function(filter) Select(filter) end,
+        type        = 'checkbox',
+        name        = 'Automatically Sell Junk',
+        getFunc     = function() return Data.Options.AutoSell end,
+        setFunc     = function(value) Data.Options.AutoSell = value end,
       },
       [2] = {
         type        = 'divider',
@@ -67,6 +65,14 @@ Addon('JunkFilters', function()
         alpha       = 0.4,
       },
       [3] = {
+        type        = 'dropdown',
+        name        = 'Edit Filter',
+        reference   = 'JF_DrwopdownFilters',
+        choices     = Names(),
+        getFunc     = function() return nil end,
+        setFunc     = function(filter) Select(filter) end,
+      },
+      [4] = {
         type        = 'slider',
         name        = 'Filter Priority',
         reference   = 'JF_SliderPriority',
@@ -75,7 +81,7 @@ Addon('JunkFilters', function()
         getFunc     = function() return priority end,
         setFunc     = function(num) priority = num end,
       },
-      [4] = {
+      [5] = {
         type        = 'editbox',
         name        = 'Filter Name',
         reference   = 'JF_EditboxName',
@@ -84,16 +90,16 @@ Addon('JunkFilters', function()
         getFunc     = function() return name end,
         setFunc     = function(str) name = str end,
       },
-      [5] = {
+      [6] = {
         type        = 'editbox',
-        name        = 'Filter',
+        name        = 'Filter Code',
         reference   = 'JF_EditboxFilter',
         isExtraWide = true,
         isMultiline = true,
         getFunc     = function() JF_EditboxFilter.editbox:SetFont(editFont); return test end,
         setFunc     = function(str) test = str end, 
       },
-      [6] = {
+      [7] = {
         type        = 'button',
         name        = 'Delete Filter',
         reference   = 'JF_ButtonDelete',
@@ -101,23 +107,23 @@ Addon('JunkFilters', function()
         disabled    = function() return not editing end,
         func        = function() Delete(name); Update() end,
       },
-      [7] = {
+      [8] = {
         type        = 'button',
         name        = 'Save Filter',
         width       = 'half',
         func        = function() Save(name, priority, test); Update() end,
       },
-      [8] = {
+      [9] = {
         type        = 'divider',
         width       = 'full',
         alpha       = 0.4,
       },
-      [9] = {
+      [10] = {
         type        = 'description',
         text        = 'You can use "|cACC0E0/filternow|r" to run your filters on your entire inventory if needed. How to write a filter is documented online.',
         width       = 'full',
       },
-      [10] = {
+      [11] = {
         type        = 'button',
         name        = 'View Documentation',
         func        = function() RequestOpenUnsafeURL(docsLink) end,
