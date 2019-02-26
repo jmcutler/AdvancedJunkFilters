@@ -32,7 +32,7 @@ Addon('JunkFilters', function()
   local function FilterItem (code, bag, slot)
 
     local Item = Backpack.Item(slot)
-    if Item.IsLocked() or Item.Qaulity() > 4 then return end
+    if Item.IsLocked() or Item.Quality() > 4 then return end
 
     local function FilterType (...)
       local nums  = Item.FilterTypes()
@@ -44,7 +44,7 @@ Addon('JunkFilters', function()
       stat           = Item.Stat,
       level          = Item.Level,
       cp             = Item.CP,
-      qaulity        = Item.Qaulity,
+      quality        = Item.Quality,
       condition      = Item.Condition,
       craftRank      = Item.CraftRank,
       stack          = Item.Stack,
